@@ -69,7 +69,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.name
+        return self.text
 
 
 class CommentLike(models.Model):
@@ -80,4 +80,4 @@ class CommentLike(models.Model):
     disliked = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.name
+        return self.user.username
