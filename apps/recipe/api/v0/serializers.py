@@ -11,11 +11,11 @@ class RateRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    rate = RateRecipeSerializer(many=True, read_only=True)
+    rates = RateRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'image', 'rate']
+        fields = ['id', 'title', 'time_minutes', 'image', 'rates']
 
 
 class CategoryListSerializer(serializers.ModelSerializer):

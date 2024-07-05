@@ -1,7 +1,8 @@
-from django_filters.rest_framework import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 from requests import Response
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, DestroyAPIView, get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.views import APIView
 
 from apps.recipe.api.v0.filters import RecipeFilter
@@ -45,10 +46,10 @@ class RecipeDeleteAPIView(DestroyAPIView):
 class RecipeListAPIView(ListAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
-    # permission_classes = [AllowAny]
-    filter_backends = (OrderingFilter,)
+    permission_classes = [AllowAny]
+    filter_backends = (OrderingFilter, DjangoFilterBackend)
     filterset_class = RecipeFilter
-    ordernig_fields = ['created_at']
+    ordering_fields = ['created_at']
 
 
 class CategoryListAPIView(ListAPIView):
