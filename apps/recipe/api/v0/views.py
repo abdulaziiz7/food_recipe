@@ -116,8 +116,6 @@ class CommentDeleteAPIView(DestroyAPIView):
         comment.delete()
         return Response(f"{comment.user} deleted successfully.", status=status.HTTP_200_OK)
 
-
-
 class LikeCommentAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
@@ -149,6 +147,7 @@ class LikeCommentAPIView(APIView):
             serializer = LikeSerializer(like_comment)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(f"{like_comment.user} Not Liked.", status=status.HTTP_400_BAD_REQUEST)
+
 
 
 like_dislike_comment = LikeCommentAPIView.as_view()
