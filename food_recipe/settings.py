@@ -40,10 +40,12 @@ INSTALLED_APPS = [
 ]
 
 THIRD_APPS = [
+    'django_filters',
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
     'rest_framework.authtoken',
+    'import_export',
 ]
 
 LOCAL_APPS = [
@@ -145,13 +147,12 @@ AUTH_USER_MODEL = 'user.User'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'user.User'
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 
