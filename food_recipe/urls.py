@@ -49,7 +49,7 @@ urlpatterns = [
 
 api_urls = [
     path('api/v0/user/', include('apps.user.api.v0.urls')),
-    # path('api/v0/recipe/', include('apps.recipe.api.v0.urls')),
+    path('api/v0/recipe/', include('apps.recipe.api.v0.urls')),
     # path('api/v0/notification/', include('apps.notification.api.v0.urls')),
 ]
 
