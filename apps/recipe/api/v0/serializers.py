@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike
+from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike, Tag
 
 
 class RateRecipeSerializer(serializers.ModelSerializer):
@@ -43,11 +43,6 @@ class CommentLikeSerializer(serializers.Serializer):
         return attrs
 
 
-from rest_framework import serializers
-
-from apps.recipe.models import Comment, Category, Tag, Recipe
-
-
 class CreateCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -80,11 +75,3 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['title', 'description', 'time_minutes']
-
-
-class RecipeListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = '__all__'
-
-
