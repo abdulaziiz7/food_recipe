@@ -22,16 +22,22 @@ class Recipe(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='recipes')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     title = models.CharField(max_length=100)
-    description = models.TextField()
     time_minutes = models.IntegerField()
-    rating = models.IntegerField(default=0)
-    image = models.ImageField(upload_to='recipes/')
-    video = models.FileField(upload_to='recipes/', null=True, blank=True)
-    saved = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='recipes/images/')
+    video = models.FileField(upload_to='recipes/videos/', null=True, blank=True)
     tags = models.ManyToManyField(Tag)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+
+class RecipeSaved(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='saved')
+
+    def __str__(self):
+        return self.recipe.title
 
 
 class RateRecipe(models.Model):
@@ -40,7 +46,7 @@ class RateRecipe(models.Model):
     rate = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.rate
+        return str(self.rate)
 
 
 class RecipeIngredient(models.Model):
@@ -55,7 +61,7 @@ class RecipeIngredient(models.Model):
 
 class RecipeProcedure(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
-    order = models.IntegerField()
+    step = models.IntegerField()
     description = models.TextField()
 
     def __str__(self):

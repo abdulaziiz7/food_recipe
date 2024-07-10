@@ -1,19 +1,27 @@
+from django.db.models import Avg
 from rest_framework import serializers
-from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike
+
+from apps.recipe.models import Comment, Category, Tag, Recipe, RecipeSaved
+from apps.recipe.models import RateRecipe, CommentLike
 
 
 class RateRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RateRecipe
-        fields = ['recipe', 'rate']
+        fields = ['rate']
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    rate = RateRecipeSerializer(many=True, read_only=True)
+    # rate = RateRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'rate']
+        fields = ['id', 'title', 'time_minutes', 'image']
+
+    def to_representation(self, instance):
+        tr = super().to_representation(instance)
+        tr['rate'] = instance.rates.aggregate(avg=Avg('rate'))['avg'] or 0
+        return tr
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -43,15 +51,10 @@ class CommentLikeSerializer(serializers.Serializer):
         return attrs
 
 
-from rest_framework import serializers
-
-from apps.recipe.models import Comment, Category, Tag, Recipe
-
-
 class CreateCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ['name']
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -63,7 +66,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['category', 'title', 'description', 'time_minutes', 'image', 'video']
+        fields = ['category', 'title', 'time_minutes', 'image', 'video']
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -79,12 +82,15 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 class RecipeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['title', 'description', 'time_minutes']
+        fields = ['title', 'image', 'video', 'time_minutes']
+
+# class RecipeSaveSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RecipeSaved
+#         fields = ['recipe']
 
 
-class RecipeListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = '__all__'
+
+
 
 
