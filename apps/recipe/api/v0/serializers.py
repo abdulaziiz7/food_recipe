@@ -60,7 +60,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['category', 'title', 'time_minutes', 'image', 'video']
+        fields = ['category', 'title', 'time_minutes', 'image']
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')

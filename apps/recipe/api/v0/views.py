@@ -55,6 +55,7 @@ class RecipeListAPIView(ListAPIView):
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class RateRecipeAPIView(ListAPIView):

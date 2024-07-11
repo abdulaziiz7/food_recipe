@@ -1,0 +1,16 @@
+GOOGLE AUTHENTICATION successfully
+{
+	"client_id": "755X1mhDb07FRpnxuy5ca2xUgVfWcE6cjxJfYmfd",
+        "grant_type": "convert_token",
+	"client_secret": "vbiDJlZuYRjimHCZ1o2f9fBIvAu7tJry1ukUuCfgPYRXNde7TVdJmYAra5hnYe6a3qpMYqlg8q3TgKG6LOHs3rXOdeFsr1u9UZ6fVUgiIVBTDxWD5zySaOaNEJ9LviRm",
+	"backend": "google-oauth2",
+	"token": "ya29.a0AXooCguQPCJiEONdswGnMDUXYRYoUHQO-neaLkgLzYb5l4oGtVG2X5o1W6bxaHkUEcomWORHB-Pxiu0PHqPCrcKu85-aAO_QBr0416kJqTOOyU5koKlvh5OzVJ4PwA1BowPptEzAbZaxjHoi0wYVxLsKigUmVklBXuS-aCgYKAXISARMSFQHGX2MiFu1IVBRuunrLdvBXe-gl_g0171"
+}
+
+{
+    "access_token": "IDiWsxeRxpz8WtVOLThw3XR6F9Sapl",
+    "expires_in": 604800,
+    "token_type": "Bearer",
+    "scope": "read write",
+    "refresh_token": "6K43BhW0iPYQysQbjyFIjBqQSzJfsp"
+}

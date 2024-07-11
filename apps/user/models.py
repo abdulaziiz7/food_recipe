@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 from apps.user.managers import UserManager
 
@@ -8,11 +7,11 @@ from apps.user.managers import UserManager
 class User(AbstractUser):
     username = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=150, unique=True)
-    phone = models.CharField(max_length=13, null=True)
+    phone = models.CharField(max_length=13, null=True, blank=True)
     image = models.ImageField(upload_to='avatars/', null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
-    location = models.CharField(max_length=255, null=True)
-    about_me = models.TextField(null=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
+    about_me = models.TextField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
