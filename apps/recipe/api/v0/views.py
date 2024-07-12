@@ -96,7 +96,7 @@ class CommentDeleteAPIView(DestroyAPIView):
 
 
 class LikeCommentAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         data = CommentLikeSerializer(request.data).__getitem__('liked').value

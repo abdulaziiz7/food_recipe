@@ -14,3 +14,12 @@ GOOGLE AUTHENTICATION successfully
     "scope": "read write",
     "refresh_token": "6K43BhW0iPYQysQbjyFIjBqQSzJfsp"
 }
+
+
+{
+	"client_id": "1SXfS45Qh5byfAjrSY4qeeiN8RZh2RhxN38cUUNq",
+        "grant_type": "convert_token",
+	"client_secret": "OgTq0uTdd5czgnNjGXWmm4dUhNYOCfJkOIH9PlnyuSgIdvXMEM5D9BLw6c1MeLmosWrspcjbFEeH39juHzivX1UDlFQfr3AZksdhdGt847ALhhFZvMBVgFmIcpjD8iLW",
+	"backend": "facebook",
+	"token": "EAAnS1ZClaclMBO6QMsayjQc8tiOczN5TRMRoUTUHDqmgJCpi2d66ZABsSWUx9xUZCFasNsYSK1pCgC0tNVrbswxWBH5ZAMfOb6OkrfQx2u1ZATCUUqcK0kAD72iZBUQtx8ZAWEEbJywl3J2J7uVdZAe39l1yrJyP6kGdGJj8TfOhyiZA3PBtH0rSs0yzBSkZCpttQDabDvPQrRbZBRIiIorzgZDZD"
+}
