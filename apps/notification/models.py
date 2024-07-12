@@ -16,4 +16,4 @@ class Notification(models.Model):
     read = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Notification for {self.user.name}: {self.message}'
+        return f'Notification for {self.user.username}: {self.message}'

@@ -29,7 +29,7 @@ user_create = UserCreateAPIView.as_view()
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
 
 user_update = UserUpdateAPIView.as_view()
@@ -86,7 +86,7 @@ follower_create = FollowerCreateAPIView.as_view()
 # class UserProfileAPIView()
 class FollowersListAPIView(ListAPIView):
     queryset = Follow.objects.all()
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = FollowerListSerializer
 
     def get_queryset(self):
@@ -99,7 +99,7 @@ followers_list = FollowersListAPIView.as_view()
 
 
 class FollowingListAPIView(ListAPIView):
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     queryset = Follow.objects.all()
     serializer_class = FollowingListSerializer
 
@@ -115,7 +115,7 @@ following_list = FollowingListAPIView.as_view()
 class UserProfileAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         qs = super().get_queryset()
