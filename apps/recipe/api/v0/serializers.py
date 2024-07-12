@@ -83,7 +83,3 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ['title', 'image', 'video', 'time_minutes']
 
-# class RecipeSaveSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = RecipeSaved
-#         fields = ['recipe']
