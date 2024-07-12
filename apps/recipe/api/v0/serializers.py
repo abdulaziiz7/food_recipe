@@ -44,6 +44,10 @@ class LikeSerializer(serializers.ModelSerializer):
 class CommentLikeSerializer(serializers.Serializer):
     liked = serializers.IntegerField()
 
+    class Meta:
+        model = CommentLike
+        fields = ['liked']
+
     def validate(self, attrs):
         if not (attrs['liked'] == '1' or attrs['liked'] == '0'):
             raise ValueError('liked must be 0 or 1')

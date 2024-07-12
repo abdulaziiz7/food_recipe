@@ -1,25 +1,8 @@
-GOOGLE AUTHENTICATION successfully
+GOOGLE AUTHENTICATION
 {
 	"client_id": "755X1mhDb07FRpnxuy5ca2xUgVfWcE6cjxJfYmfd",
         "grant_type": "convert_token",
 	"client_secret": "vbiDJlZuYRjimHCZ1o2f9fBIvAu7tJry1ukUuCfgPYRXNde7TVdJmYAra5hnYe6a3qpMYqlg8q3TgKG6LOHs3rXOdeFsr1u9UZ6fVUgiIVBTDxWD5zySaOaNEJ9LviRm",
 	"backend": "google-oauth2",
-	"token": "ya29.a0AXooCguQPCJiEONdswGnMDUXYRYoUHQO-neaLkgLzYb5l4oGtVG2X5o1W6bxaHkUEcomWORHB-Pxiu0PHqPCrcKu85-aAO_QBr0416kJqTOOyU5koKlvh5OzVJ4PwA1BowPptEzAbZaxjHoi0wYVxLsKigUmVklBXuS-aCgYKAXISARMSFQHGX2MiFu1IVBRuunrLdvBXe-gl_g0171"
-}
-
-{
-    "access_token": "IDiWsxeRxpz8WtVOLThw3XR6F9Sapl",
-    "expires_in": 604800,
-    "token_type": "Bearer",
-    "scope": "read write",
-    "refresh_token": "6K43BhW0iPYQysQbjyFIjBqQSzJfsp"
-}
-
-
-{
-	"client_id": "1SXfS45Qh5byfAjrSY4qeeiN8RZh2RhxN38cUUNq",
-        "grant_type": "convert_token",
-	"client_secret": "OgTq0uTdd5czgnNjGXWmm4dUhNYOCfJkOIH9PlnyuSgIdvXMEM5D9BLw6c1MeLmosWrspcjbFEeH39juHzivX1UDlFQfr3AZksdhdGt847ALhhFZvMBVgFmIcpjD8iLW",
-	"backend": "facebook",
-	"token": "EAAnS1ZClaclMBO6QMsayjQc8tiOczN5TRMRoUTUHDqmgJCpi2d66ZABsSWUx9xUZCFasNsYSK1pCgC0tNVrbswxWBH5ZAMfOb6OkrfQx2u1ZATCUUqcK0kAD72iZBUQtx8ZAWEEbJywl3J2J7uVdZAe39l1yrJyP6kGdGJj8TfOhyiZA3PBtH0rSs0yzBSkZCpttQDabDvPQrRbZBRIiIorzgZDZD"
+	"token": "ya29.a0AXooCgu7cNXsKF93dxz-pMIMYll2e68KgorG6k_NMNq7rWYITN7iLLgzhxq2I4vSbntR3yJ_BhNpfwHG6iI5qaJNth1_OJN3clal0cY1UDfuePN0A3TpgpDC5jFjV2wAO4v9dCZ_Gqj3sZYNUqjgMAbwX_PXgF2tMQrqaCgYKARESARMSFQHGX2MiUkAZYvT9mxGqrGiyoSpLyw0171"
 }
