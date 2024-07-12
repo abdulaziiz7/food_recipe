@@ -1,8 +1,7 @@
 from django.db.models import Avg
-from rest_framework import serializers
-
-from apps.recipe.models import Comment, Category, Tag, Recipe, RecipeSaved
 from apps.recipe.models import RateRecipe, CommentLike
+from rest_framework import serializers
+from apps.recipe.models import Comment, Category, Tag, Recipe
 
 
 class RateRecipeSerializer(serializers.ModelSerializer):
@@ -88,9 +87,3 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = RecipeSaved
 #         fields = ['recipe']
-
-
-
-
-
-

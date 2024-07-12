@@ -27,6 +27,8 @@ class RecipeUpdateAPIView(UpdateAPIView):
     queryset = Recipe.objects.all()
     permission_classes = [IsOwner]
 
+    # lookup_field = 'id'
+
     def get_object(self):
         obj = super().get_object()
         self.check_object_permissions(self.request, obj)
@@ -65,7 +67,6 @@ class RecipeListForUserAPIView(ListAPIView):
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class RateRecipeAPIView(CreateAPIView):
