@@ -7,6 +7,10 @@ User = get_user_model()
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
     def __str__(self):
         return self.name
 
@@ -35,6 +39,10 @@ class Recipe(models.Model):
 class RecipeSaved(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved')
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='saved')
+
+    class Meta:
+        verbose_name = "Recipe saved"
+        verbose_name_plural = "Recipes saved"
 
     def __str__(self):
         return self.recipe.title
@@ -75,7 +83,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user.name
+        return self.user.username
 
 
 class CommentLike(models.Model):

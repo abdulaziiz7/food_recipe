@@ -1,7 +1,7 @@
 from rest_framework import serializers
-
+from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike
+from rest_framework import serializers
 from apps.recipe.models import Comment, Category, Tag, Recipe
-from apps.recipe.models import RateRecipe, CommentLike
 
 
 class RateRecipeSerializer(serializers.ModelSerializer):
@@ -11,11 +11,11 @@ class RateRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    rate = RateRecipeSerializer(many=True, read_only=True)
+    rates = RateRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'image', 'rate']
+        fields = ['id', 'title', 'time_minutes', 'image', 'rates']
 
 
 class CategoryListSerializer(serializers.ModelSerializer):
@@ -60,7 +60,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ['category', 'title', 'time_minutes', 'image', 'video']
+        fields = ['category', 'title', 'time_minutes', 'image']
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -78,3 +78,4 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = ['title', 'image', 'video', 'time_minutes']
 
+# ----------------- Rate ----------------------

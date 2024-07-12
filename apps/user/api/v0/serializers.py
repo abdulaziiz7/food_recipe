@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 
+from apps.recipe.models import Recipe
 from apps.user.models import Follow
 
 User = get_user_model()
@@ -92,20 +93,14 @@ class FollowingListSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    # follower = serializers.SerializerMethodField
-    # following = serializers.SerializerMethodField
+    recipes = serializers.SerializerMethodField
 
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'location',
                   'birthday', 'image', 'follower', 'following']
 
-    # def get_follower(self, obj):
-    #     follower = Follow.objects.filter(following=obj)
-    #     serializer = FollowerListSerializer(follower, many=True)
-    #     return serializer.data
-    #
-    # def get_following(self, obj):
-    #     following = Follow.objects.filter(follower=obj)
-    #     serializer = FollowerListSerializer(following, many=True)
-    #     return serializer.data
+    def get_recipes(self, obj):
+        recipes = Recipe.objects.filter(user=obj)
+        serializer = FollowerListSerializer(follower, many=True)
+        return serializer.data

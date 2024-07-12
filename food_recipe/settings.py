@@ -46,6 +46,10 @@ THIRD_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'import_export',
+    # OAuth
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
 ]
 
 LOCAL_APPS = [
@@ -81,6 +85,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # OAuth
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -144,13 +151,17 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 AUTH_USER_MODEL = 'user.User'
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'drf_social_oauth2.authentication.SocialAuthentication',
+        # OAuth
+        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'drf_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
@@ -194,4 +205,49 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+AUTHENTICATION_BACKENDS = (
+    # Facebook OAuth2
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    # Google OAuth2
+    'social_core.backends.google.GoogleOAuth2',
+
+    # drf-social-oauth2
+    'drf_social_oauth2.backends.DjangoOAuth2',
+
+    # Django
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# Facebook configuration
+SOCIAL_AUTH_FACEBOOK_KEY = '1SXfS45Qh5byfAjrSY4qeeiN8RZh2RhxN38cUUNq'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'OgTq0uTdd5czgnNjGXWmm4dUhNYOCfJkOIH9PlnyuSgIdvXMEM5D9BLw6c1MeLmosWrspcjbFEeH39juHzivX1UDlFQfr3AZksdhdGt847ALhhFZvMBVgFmIcpjD8iLW'
+
+# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
+# Email is not sent by default, to get it, you must request the email permission.
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+  'locale': 'ru_RU',
+  'fields': 'id, name, email'
+}
+SOCIAL_AUTH_FACEBOOK_API_VERSION = '2.10'
+access_token_facebook = "EAAnS1ZClaclMBO6QMsayjQc8tiOczN5TRMRoUTUHDqmgJCpi2d66ZABsSWUx9xUZCFasNsYSK1pCgC0tNVrbswxWBH5ZAMfOb6OkrfQx2u1ZATCUUqcK0kAD72iZBUQtx8ZAWEEbJywl3J2J7uVdZAe39l1yrJyP6kGdGJj8TfOhyiZA3PBtH0rSs0yzBSkZCpttQDabDvPQrRbZBRIiIorzgZDZD"
+
+
+# Google configuration
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '755X1mhDb07FRpnxuy5ca2xUgVfWcE6cjxJfYmfd'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'vbiDJlZuYRjimHCZ1o2f9fBIvAu7tJry1ukUuCfgPYRXNde7TVdJmYAra5hnYe6a3qpMYqlg8q3TgKG6LOHs3rXOdeFsr1u9UZ6fVUgiIVBTDxWD5zySaOaNEJ9LviRm'
+
+# Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+access_token_google = 'ya29.a0AXooCguQPCJiEONdswGnMDUXYRYoUHQO-neaLkgLzYb5l4oGtVG2X5o1W6bxaHkUEcomWORHB-Pxiu0PHqPCrcKu85-aAO_QBr0416kJqTOOyU5koKlvh5OzVJ4PwA1BowPptEzAbZaxjHoi0wYVxLsKigUmVklBXuS-aCgYKAXISARMSFQHGX2MiFu1IVBRuunrLdvBXe-gl_g0171'
+
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 604800,  # 7 days
 }
