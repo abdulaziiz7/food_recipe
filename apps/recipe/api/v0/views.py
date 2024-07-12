@@ -1,11 +1,11 @@
-from django_filters.rest_framework import DjangoFilterBackend
 from requests import Response
-from rest_framework import status
 from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, DestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from apps.recipe.api.v0.filters import RecipeFilter
 from apps.recipe.api.v0.permissions import IsOwner
 from apps.recipe.api.v0.serializers import RecipeCreateSerializer, RecipeUpdateSerializer, RecipeListSerializer, \
@@ -69,6 +69,7 @@ class CategoryListAPIView(ListAPIView):
 
 
 class RateRecipeAPIView(CreateAPIView):
+    queryset = RateRecipe
     serializer_class = RateRecipeSerializer
     permission_classes = [IsAuthenticated]
 
@@ -107,13 +108,35 @@ class CommentDeleteAPIView(DestroyAPIView):
         return Response(f"{comment.user} deleted successfully.", status=status.HTTP_200_OK)
 
 
+class RecipeListForUserAPIView(ListAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeListSerializer
+    permission_classes = [IsOwner]
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(user=self.request.user)
+        return qs
+
+
+class RateRecipeAPIView(CreateAPIView):
+    serializer_class = RateRecipeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if not recipe:
+            return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+        RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
+        return Response({"success":"Rated Recipe successfully."}, status=status.HTTP_200_OK)
+
+
 class LikeCommentAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         data = CommentLikeSerializer(request.data).__getitem__('liked').value
         commit = get_object_or_404(Comment, pk=pk)
-        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=1)
+        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=request.user)
         if data == 1:
             if like_comment.liked is True and like_comment.disliked is False:
                 like_comment.liked = False
@@ -139,7 +162,22 @@ class LikeCommentAPIView(APIView):
         return Response(f"{like_comment.user} Not Liked.", status=status.HTTP_400_BAD_REQUEST)
 
 
+class SavedRecipeAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        saved_recipe, created = RecipeSaved.objects.get_or_create(recipe=recipe, user=request.user)
+
+        if not created:
+            saved_recipe.delete()
+            return Response({'message': 'Unsaved'}, status=status.HTTP_200_OK)
+
+        return Response({"message": "Saved"}, status=status.HTTP_201_CREATED)
+
+
 recipe_list_for_user = RecipeListForUserAPIView.as_view()
+saved_recipe = SavedRecipeAPIView.as_view()
 recipe_create = RecipeCreateAPIView.as_view()
 recipe_list = RecipeListAPIView.as_view()
 recipe_update = RecipeUpdateAPIView.as_view()
