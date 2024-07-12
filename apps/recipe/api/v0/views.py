@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from requests import Response
+from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, DestroyAPIView, get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
@@ -9,7 +10,7 @@ from apps.recipe.api.v0.filters import RecipeFilter
 from apps.recipe.api.v0.permissions import IsOwner
 from apps.recipe.api.v0.serializers import RecipeCreateSerializer, RecipeUpdateSerializer, RecipeListSerializer, \
     CategoryListSerializer, RateRecipeSerializer, CommentSerializer, CommentLikeSerializer, LikeSerializer
-from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike
+from apps.recipe.models import Recipe, Category, RateRecipe, Comment, CommentLike, RecipeSaved
 
 
 class RecipeCreateAPIView(CreateAPIView):
@@ -25,8 +26,6 @@ class RecipeUpdateAPIView(UpdateAPIView):
     serializer_class = RecipeUpdateSerializer
     queryset = Recipe.objects.all()
     permission_classes = [IsOwner]
-
-    # lookup_field = 'id'
 
     def get_object(self):
         obj = super().get_object()
@@ -52,20 +51,33 @@ class RecipeListAPIView(ListAPIView):
     ordering_fields = ['created_at']
 
 
+class RecipeListForUserAPIView(ListAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeListSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(user=self.request.user)
+        return qs
+
+
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
-class RateRecipeAPIView(ListAPIView):
-    queryset = RateRecipe.objects.all()
+class RateRecipeAPIView(CreateAPIView):
     serializer_class = RateRecipeSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self, *args, **kwargs):
-        recipe_id = self.kwargs['recipe']
-        return RateRecipe.objects.filter(recipe_id=recipe_id)
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if not recipe:
+            return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+        RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
+        return Response({"success":"Rated Recipe successfully."}, status=status.HTTP_200_OK)
 
 
 class CommentCreateAPIView(CreateAPIView):
@@ -127,6 +139,7 @@ class LikeCommentAPIView(APIView):
         return Response(f"{like_comment.user} Not Liked.", status=status.HTTP_400_BAD_REQUEST)
 
 
+recipe_list_for_user = RecipeListForUserAPIView.as_view()
 recipe_create = RecipeCreateAPIView.as_view()
 recipe_list = RecipeListAPIView.as_view()
 recipe_update = RecipeUpdateAPIView.as_view()
