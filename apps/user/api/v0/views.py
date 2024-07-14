@@ -1,7 +1,10 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.decorators import api_view
+from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +16,8 @@ from apps.user.api.v0.serializers import (
     UserLoginSerializer, FollowerListSerializer, FollowingListSerializer, UserProfileSerializer,
 )
 from apps.user.models import Follow
+from apps.user.signals import send_email
+
 
 User = get_user_model()
 
@@ -21,6 +26,24 @@ class UserCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = (AllowAny, )
+
+    def perform_create(self, serializer):
+        user = serializer.save(user=self.request.user)
+        user.is_active = False
+        user.save()
+        email = user.email
+        try:
+            send_email(user, email)
+        except Exception as e:
+            user.delete()
+            raise e
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response(
+            {"message": "Registration successful. Please check your email to verify your account."},
+            status=status.HTTP_201_CREATED
+        )
 
 
 user_create = UserCreateAPIView.as_view()
@@ -124,3 +147,27 @@ class UserProfileAPIView(ListAPIView):
 
 
 user_profile = UserProfileAPIView.as_view()
+
+
+@api_view(['GET', 'POST'])
+def verify_code(request):
+    user_id = request.GET.get('user_id')
+    code = request.GET.get('code')
+
+    if not user_id:
+        return Response({"message": "User ID not provided!"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return Response({"message": "User with this ID not found!"}, status=status.HTTP_404_NOT_FOUND)
+
+    code_cache = cache.get(user_id)
+    if code_cache is not None and code == code_cache:
+        user.is_active = True
+        user.save()
+        return Response({"message": "User successfully logged in"}, status=status.HTTP_200_OK)
+
+    return Response({"message": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
+
+

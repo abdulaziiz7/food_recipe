@@ -6,3 +6,21 @@ GOOGLE AUTHENTICATION
 	"backend": "google-oauth2",
 	"token": "ya29.a0AXooCgu7cNXsKF93dxz-pMIMYll2e68KgorG6k_NMNq7rWYITN7iLLgzhxq2I4vSbntR3yJ_BhNpfwHG6iI5qaJNth1_OJN3clal0cY1UDfuePN0A3TpgpDC5jFjV2wAO4v9dCZ_Gqj3sZYNUqjgMAbwX_PXgF2tMQrqaCgYKARESARMSFQHGX2MiUkAZYvT9mxGqrGiyoSpLyw0171"
 }
+
+# @api_view(['GET', 'POST'])
+# def verify_code(request):
+#     user_id = request.GET.get('user_id')
+#     code = request.GET.get('code')
+#     if not user_id:
+#         return Response({"message": "User ID not provided!"}, status=status.HTTP_404_NOT_FOUND)
+#     try:
+#         user = User.objects.get(pk=user_id)
+#     except User.DoesNotExist:
+#         return Response({"message": "User with this ID not found!"}, status=status.HTTP_404_NOT_FOUND)
+#     code_cache = cache.get(user_id)
+#     if code_cache is not None and code == code_cache:
+#         user.is_active = True
+#         user.save()
+#         return Response({"message": "User successfully logged in"}, status=status.HTTP_200_OK)
+#
+#     return Response({"message": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)

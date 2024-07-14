@@ -30,6 +30,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             email=data['email'],
         )
         user.set_password(data['password'])
+        user.is_active = False
         user.save()
         return user
 

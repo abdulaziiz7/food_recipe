@@ -128,7 +128,7 @@ class RateRecipeAPIView(CreateAPIView):
         if not recipe:
             return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
         RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
-        return Response({"success":"Rated Recipe successfully."}, status=status.HTTP_200_OK)
+        return Response({"success": "Rated Recipe successfully."}, status=status.HTTP_200_OK)
 
 
 class LikeCommentAPIView(APIView):

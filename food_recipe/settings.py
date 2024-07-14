@@ -232,3 +232,11 @@ access_token_google = "ya29.a0AXooCgu7cNXsKF93dxz-pMIMYll2e68KgorG6k_NMNq7rWYITN
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 604800,  # 7 days
 }
+
+#Email SETTINGS
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'cybermizrobov72022@gmail.com'
+EMAIL_HOST_PASSWORD = 'rbzcjuhfddcxjier'
