@@ -28,8 +28,8 @@ def create_follow(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def send_email(sender, instance, created=True, **kwargs):
     code = generate_code()
-    cache.set(f"{instance.id}", code, timeout=90)
-    redirect_url = f"http://127.0.0.1:8000/api/v0/user/verify-code?code={code}&user_id={instance.id}"
+    cache.set(f"{instance.pk}", code, timeout=90)
+    redirect_url = f"http://127.0.0.1:8000/api/v0/user/verify-code?code={code}&user_id={instance.pk}"
     if created:
         subject = "Verify your email!"
         message = f"Verify code: {code} url: {redirect_url}"

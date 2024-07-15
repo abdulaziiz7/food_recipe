@@ -27,17 +27,6 @@ class UserCreateAPIView(CreateAPIView):
     serializer_class = UserCreateSerializer
     permission_classes = (AllowAny, )
 
-    def perform_create(self, serializer):
-        user = serializer.save(user=self.request.user)
-        user.is_active = False
-        user.save()
-        email = user.email
-        try:
-            send_email(user, email)
-        except Exception as e:
-            user.delete()
-            raise e
-
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         return Response(
@@ -149,7 +138,7 @@ class UserProfileAPIView(ListAPIView):
 user_profile = UserProfileAPIView.as_view()
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def verify_code(request):
     user_id = request.GET.get('user_id')
     code = request.GET.get('code')
@@ -171,3 +160,4 @@ def verify_code(request):
     return Response({"message": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+# @api.
