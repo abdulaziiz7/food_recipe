@@ -42,6 +42,8 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
+    path('auth/', include('drf_social_oauth2.urls')),
+
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
@@ -50,7 +52,7 @@ urlpatterns = [
 api_urls = [
     path('api/v0/user/', include('apps.user.api.v0.urls')),
     path('api/v0/recipe/', include('apps.recipe.api.v0.urls')),
-    # path('api/v0/notification/', include('apps.notification.api.v0.urls')),
+    path('api/v0/notification/', include('apps.notification.api.v0.urls')),
 ]
 
 urlpatterns += api_urls

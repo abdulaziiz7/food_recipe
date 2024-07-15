@@ -1,7 +1,6 @@
 from django.db.models import Avg
 from rest_framework import serializers
-
-from apps.recipe.models import Comment, Category, Tag, Recipe, RecipeSaved
+from apps.recipe.models import Comment, Category, Tag, Recipe
 from apps.recipe.models import RateRecipe, CommentLike
 
 
@@ -12,11 +11,11 @@ class RateRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeListSerializer(serializers.ModelSerializer):
-    # rate = RateRecipeSerializer(many=True, read_only=True)
+    rates = RateRecipeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'image']
+        fields = ['id', 'title', 'time_minutes', 'image', 'rates']
 
     def to_representation(self, instance):
         tr = super().to_representation(instance)
@@ -56,41 +55,35 @@ class CreateCategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['name']
 
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['name']
 
-
 class RecipeCreateSerializer(serializers.ModelSerializer):
+    tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
+
     class Meta:
         model = Recipe
-        fields = ['category', 'title', 'time_minutes', 'image', 'video']
+        fields = ['category', 'title', 'time_minutes', 'image', 'video', 'tags']
 
     def create(self, validated_data):
-        tags = validated_data.pop('tags')
+        tags_data = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
 
-        for tag in tags:
-            tag, created = Tag.objects.get_or_create(**tag)
+        for tag in tags_data:
             recipe.tags.add(tag)
 
         return recipe
-
 
 class RecipeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['title', 'image', 'video', 'time_minutes']
 
-# class RecipeSaveSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = RecipeSaved
-#         fields = ['recipe']
 
+class RecipeDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Recipe
 
-
-
-
-
+# ----------------- Rate ----------------------
