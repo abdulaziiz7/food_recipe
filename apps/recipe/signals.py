@@ -29,7 +29,7 @@ def comment_recipe(sender, instance, created, **kwargs):
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             title='New Comment!',
-            message=f"Comment: {instance.comment.text}\nOn Recipe: {instance.recipe.title}\nBy {instance.user.username} "
+            message=f"Comment: {instance.text}\nOn Recipe: {instance.recipe.title}\nBy {instance.user.username} "
         )
 
 
