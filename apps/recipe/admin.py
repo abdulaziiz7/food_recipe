@@ -1,8 +1,10 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Recipe, RateRecipe, Category, Tag, RecipeIngredient, RecipeProcedure, Comment, CommentLike, \
-    RecipeSaved
+from .models import (
+    Recipe, RateRecipe, Category, Tag, RecipeIngredient,
+    RecipeProcedure, Comment, CommentLike, RecipeSaved
+)
 
 
 @admin.register(Category)
@@ -30,7 +32,7 @@ class RecipeProcedureInlineModel(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(ImportExportModelAdmin):
-    fields = ['user', 'title', 'category', 'time_minutes', 'image']
+    fields = ['user', 'title', 'category', 'time_minutes', 'image' , 'video']
     list_display = ['title', 'category']
     list_filter = ['category',]
     search_fields = ['title', 'category__name']
