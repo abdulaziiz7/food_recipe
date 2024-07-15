@@ -46,6 +46,7 @@ THIRD_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'import_export',
+
     # OAuth
     'oauth2_provider',
     'social_django',
@@ -232,6 +233,7 @@ access_token_google = "ya29.a0AXooCgu7cNXsKF93dxz-pMIMYll2e68KgorG6k_NMNq7rWYITN
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 604800,  # 7 days
 }
+
 
 #Email SETTINGS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

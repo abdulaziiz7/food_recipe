@@ -1,9 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django_rest_passwordreset.signals import reset_password_token_created
+from rest_framework.reverse import reverse
 
 from apps.notification.models import Notification
 from apps.user.api.v0.utils import generate_code
@@ -26,7 +29,7 @@ def create_follow(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def send_email(sender, instance, created=True, **kwargs):
+def send_email(sender, instance, created, **kwargs):
     code = generate_code()
     cache.set(f"{instance.pk}", code, timeout=90)
     redirect_url = f"http://127.0.0.1:8000/api/v0/user/verify-code?code={code}&user_id={instance.pk}"

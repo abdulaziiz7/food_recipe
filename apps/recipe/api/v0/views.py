@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_auto_schema
 from requests import Response
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -52,6 +53,10 @@ class RecipeListAPIView(ListAPIView):
     filterset_class = RecipeFilter
     ordering_fields = ['created_at']
 
+    @swagger_auto_schema(operation_id='RecipeList', tags=['Recipe'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class RecipeListForUserAPIView(ListAPIView):
     queryset = Recipe.objects.all()
@@ -63,10 +68,18 @@ class RecipeListForUserAPIView(ListAPIView):
         qs = qs.filter(user=self.request.user)
         return qs
 
+    @swagger_auto_schema(operation_id='listRecipe-forUser', tags=['Recipe'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
+
+    @swagger_auto_schema(operation_id='CategoryList', tags=['Recipe'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class RateRecipeAPIView(CreateAPIView):
@@ -107,28 +120,6 @@ class CommentDeleteAPIView(DestroyAPIView):
         self.check_object_permissions(self.request, comment)
         comment.delete()
         return Response(f"{comment.user} deleted successfully.", status=status.HTTP_200_OK)
-
-
-class RecipeListForUserAPIView(ListAPIView):
-    queryset = Recipe.objects.all()
-    serializer_class = RecipeListSerializer
-    permission_classes = [IsOwner]
-    def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.filter(user=self.request.user)
-        return qs
-
-
-class RateRecipeAPIView(CreateAPIView):
-    serializer_class = RateRecipeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        if not recipe:
-            return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-        RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
-        return Response({"success": "Rated Recipe successfully."}, status=status.HTTP_200_OK)
 
 
 class LikeCommentAPIView(APIView):

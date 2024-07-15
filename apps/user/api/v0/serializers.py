@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 
+from apps.recipe.api.v0.serializers import RecipeListSerializer
 from apps.recipe.models import Recipe
 from apps.user.models import Follow
 
@@ -8,7 +9,7 @@ User = get_user_model()
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(max_length=16, write_only=True)
+    password2 = serializers.CharField(min_length=4, max_length=16, write_only=True)
 
     class Meta:
         model = User
@@ -99,9 +100,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'location',
-                  'birthday', 'image', 'follower', 'following']
+                  'birthday', 'image', 'follower', 'following', 'recipes']
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(user=obj)
-        serializer = FollowerListSerializer(follower, many=True)
+        serializer = RecipeListSerializer(recipes, many=True)
         return serializer.data
+
+
+class UserChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+

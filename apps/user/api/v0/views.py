@@ -1,9 +1,9 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.core.cache import cache
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from apps.user.api.v0.serializers import (
     UserUpdateSerializer,
     FollowingCreateSerializer,
     UserLoginSerializer, FollowerListSerializer, FollowingListSerializer, UserProfileSerializer,
+    UserChangePasswordSerializer,
 )
 from apps.user.models import Follow
 from apps.user.signals import send_email
@@ -160,4 +161,19 @@ def verify_code(request):
     return Response({"message": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api.
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    if request.method == 'POST':
+        serializer = UserChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            user = request.user
+            if user.check_password(serializer.data.get('old_password')):
+                user.set_password(serializer.data.get('new_password'))
+                user.save()
+                update_session_auth_hash(request, user)  # To update session after password change
+                return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+            return Response({'error': 'Incorrect old password.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
