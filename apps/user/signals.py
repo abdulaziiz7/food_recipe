@@ -1,12 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django_rest_passwordreset.signals import reset_password_token_created
-from rest_framework.reverse import reverse
 
 from apps.notification.models import Notification
 from apps.user.api.v0.utils import generate_code

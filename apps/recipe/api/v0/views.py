@@ -1,12 +1,12 @@
-from drf_yasg.utils import swagger_auto_schema
-from requests import Response
-from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, DestroyAPIView, get_object_or_404
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from apps.recipe.api.v0.filters import RecipeFilter
 from apps.recipe.api.v0.permissions import IsOwner
 from apps.recipe.api.v0.serializers import RecipeCreateSerializer, RecipeUpdateSerializer, RecipeListSerializer, \
@@ -18,6 +18,7 @@ class RecipeCreateAPIView(CreateAPIView):
     serializer_class = RecipeCreateSerializer
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -27,6 +28,7 @@ class RecipeUpdateAPIView(UpdateAPIView):
     serializer_class = RecipeUpdateSerializer
     queryset = Recipe.objects.all()
     permission_classes = [IsOwner]
+    parser_classes = (MultiPartParser, FormParser)
 
     # lookup_field = 'id'
 
@@ -38,24 +40,13 @@ class RecipeUpdateAPIView(UpdateAPIView):
 
 class RecipeDeleteAPIView(DestroyAPIView):
     permission_classes = [IsOwner]
+    model = Recipe
 
-    def get_object(self):
-        obj = super().get_object()
-        self.check_object_permissions(self.request, obj)
-        return obj
-
-
-class RecipeListAPIView(ListAPIView):
-    queryset = Recipe.objects.all()
-    serializer_class = RecipeListSerializer
-    permission_classes = [AllowAny]
-    filter_backends = (OrderingFilter, DjangoFilterBackend)
-    filterset_class = RecipeFilter
-    ordering_fields = ['created_at']
-
-    @swagger_auto_schema(operation_id='RecipeList', tags=['Recipe'])
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    def delete(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        self.check_object_permissions(self.request, recipe)
+        self.perform_destroy(recipe)
+        return Response({'message': 'Recipe deleted successfully .'})
 
 
 class RecipeListForUserAPIView(ListAPIView):
@@ -68,31 +59,12 @@ class RecipeListForUserAPIView(ListAPIView):
         qs = qs.filter(user=self.request.user)
         return qs
 
-    @swagger_auto_schema(operation_id='listRecipe-forUser', tags=['Recipe'])
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    ordering_fields = ['created_at']
 
 
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
-
-    @swagger_auto_schema(operation_id='CategoryList', tags=['Recipe'])
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-
-class RateRecipeAPIView(CreateAPIView):
-    queryset = RateRecipe
-    serializer_class = RateRecipeSerializer
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
-        recipe = get_object_or_404(Recipe, pk=pk)
-        if not recipe:
-            return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
-        RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
-        return Response({"success":"Rated Recipe successfully."}, status=status.HTTP_200_OK)
 
 
 class CommentCreateAPIView(CreateAPIView):
@@ -122,13 +94,25 @@ class CommentDeleteAPIView(DestroyAPIView):
         return Response(f"{comment.user} deleted successfully.", status=status.HTTP_200_OK)
 
 
-class LikeCommentAPIView(APIView):
+class RateRecipeAPIView(CreateAPIView):
+    serializer_class = RateRecipeSerializer
     permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if not recipe:
+            return Response({"error": "Recipe does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+        RateRecipe.objects.create(recipe=recipe, user=request.user, rate=request.data['rate'])
+        return Response({"success": "Rated Recipe successfully."}, status=status.HTTP_200_OK)
+
+
+class LikeCommentAPIView(APIView):
+    # permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         data = CommentLikeSerializer(request.data).__getitem__('liked').value
         commit = get_object_or_404(Comment, pk=pk)
-        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=request.user)
+        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=1)
         if data == 1:
             if like_comment.liked is True and like_comment.disliked is False:
                 like_comment.liked = False
@@ -152,6 +136,15 @@ class LikeCommentAPIView(APIView):
             serializer = LikeSerializer(like_comment)
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(f"{like_comment.user} Not Liked.", status=status.HTTP_400_BAD_REQUEST)
+
+
+class RecipeListAPIView(ListAPIView):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeListSerializer
+    permission_classes = [AllowAny]
+    filter_backends = (OrderingFilter, DjangoFilterBackend)
+    filterset_class = RecipeFilter
+    ordering_fields = ['created_at']
 
 
 class SavedRecipeAPIView(CreateAPIView):

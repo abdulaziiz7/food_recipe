@@ -4,7 +4,7 @@ from .views import (
     recipe_list, recipe_category,
     recipe_comment_create, recipe_comment_list,
     recipe_comment_delete,
-    recipe_list_for_user, saved_recipe, recipe_create, recipe_update, rate_recipe, like_dislike_comment
+    recipe_list_for_user, saved_recipe, recipe_create, recipe_update, rate_recipe, like_dislike_comment, recipe_delete
 )
 app_name = 'recipe_api'
 
@@ -22,4 +22,5 @@ urlpatterns = [
     path('recipe-comment-delete/<int:pk>', recipe_comment_delete, name='recipe_comment-delete'),
     path('like-dislike-comment/<int:pk>', like_dislike_comment, name='like-dislike-comment'),
     path('rate-recipe/<int:pk>', rate_recipe, name='rate_recipe'),
+    path('recipe-delete/<int:pk>', recipe_delete, name='recipe_delete'),
 ]
