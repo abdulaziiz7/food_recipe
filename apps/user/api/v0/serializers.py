@@ -113,3 +113,12 @@ class UserChangePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
 
+class UserResetPasswordRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class UserResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(
+        write_only=True,
+        error_messages={'invalid': ('The password must be at least 4 characters long and contain a letter and a symbol.')})
+    confirm_password = serializers.CharField(write_only=True, required=True)

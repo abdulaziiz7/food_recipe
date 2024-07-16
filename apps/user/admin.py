@@ -6,7 +6,12 @@ from apps.user.models import User, Follow
 
 @admin.register(User)
 class RecipeAdmin(ImportExportModelAdmin):
-    fields = ['username', 'first_name', 'last_name', 'phone', 'location']
+    fields = [
+        'username', 'first_name',
+        'last_name', 'phone',
+        'birthday', 'location',
+        'about_me'
+    ]
     list_display = ['pk', 'username']
     search_fields = ['email']
 
