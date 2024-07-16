@@ -29,12 +29,21 @@ class UserCreateAPIView(CreateAPIView):
     permission_classes = (AllowAny, )
 
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        return Response(
-            {"message": "Registration successful. Please check your email to verify your account."},
-            status=status.HTTP_201_CREATED
-        )
+        email = request.data['email']
+        user = User.objects.filter(email=email).first()
+        print(user, '00000000000000000000')
+        # serializer = self.get_serializer(data=request.data)
+        print('serializer', 'pppppppppppppppp')
 
+        if user and not user.is_active:
+            serializer = self.get_serializer(request.data)
+            print('ooooooooooo')
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 user_create = UserCreateAPIView.as_view()
 
@@ -58,8 +67,7 @@ class UserLoginView(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,
-            'email': user.email,
-            'password': user.password,
+            'email': user.email
         })
 
 
