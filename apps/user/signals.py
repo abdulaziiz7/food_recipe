@@ -30,10 +30,10 @@ def send_email(sender, instance, created, **kwargs):
     code = generate_code()
     cache.set(f"{instance.pk}", code, timeout=90)
     redirect_url = f"http://127.0.0.1:8000/api/v0/user/verify-code?code={code}&user_id={instance.pk}"
-    if created:
-        subject = "Verify your email!"
-        message = f"Verify code: {code} url: {redirect_url}"
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [instance.email]
 
-        send_mail(subject, message, from_email, recipient_list)
+    subject = "Verify your email!"
+    message = f"Verify code: {code} url: {redirect_url}"
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = [instance.email]
+
+    send_mail(subject, message, from_email, recipient_list)

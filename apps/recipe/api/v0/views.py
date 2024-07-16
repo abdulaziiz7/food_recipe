@@ -107,12 +107,12 @@ class RateRecipeAPIView(CreateAPIView):
 
 
 class LikeCommentAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         data = CommentLikeSerializer(request.data).__getitem__('liked').value
         commit = get_object_or_404(Comment, pk=pk)
-        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=1)
+        like_comment, created = CommentLike.objects.get_or_create(comment=commit, user=request.user)
         if data == 1:
             if like_comment.liked is True and like_comment.disliked is False:
                 like_comment.liked = False

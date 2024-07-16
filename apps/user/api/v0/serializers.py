@@ -13,7 +13,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2']
+        fields = ['pk', 'email', 'password', 'password2']
 
         extra_kwargs = {
             'password': {'write_only': True}
@@ -100,7 +100,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'location',
-                  'birthday', 'image', 'follower', 'following', 'recipes']
+                  'birthday', 'image','recipes']
 
     def get_recipes(self, obj):
         recipes = Recipe.objects.filter(user=obj)
