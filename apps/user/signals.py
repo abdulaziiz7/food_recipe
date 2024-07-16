@@ -17,7 +17,7 @@ User = get_user_model()
 def create_follow(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
-            user=instance.following,
+            user=instance.follower,
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             title='New Follower',
