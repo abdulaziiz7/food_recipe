@@ -1,8 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 
-from apps.recipe.api.v0.serializers import RecipeListSerializer
-from apps.recipe.models import Recipe
 from apps.user.models import Follow
 
 User = get_user_model()
@@ -95,17 +93,11 @@ class FollowingListSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    recipes = serializers.SerializerMethodField
 
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'location',
                   'birthday', 'image','recipes']
-
-    def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(user=obj)
-        serializer = RecipeListSerializer(recipes, many=True)
-        return serializer.data
 
 
 class UserChangePasswordSerializer(serializers.Serializer):
@@ -113,3 +105,12 @@ class UserChangePasswordSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
 
+class UserResetPasswordRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class UserResetPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(
+        write_only=True,
+        error_messages={'invalid': ('The password must be at least 4 characters long and contain a letter and a symbol.')})
+    confirm_password = serializers.CharField(write_only=True, required=True)

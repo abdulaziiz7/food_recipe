@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model, update_session_auth_hash
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -14,11 +16,10 @@ from apps.user.api.v0.serializers import (
     UserUpdateSerializer,
     FollowingCreateSerializer,
     UserLoginSerializer, FollowerListSerializer, FollowingListSerializer, UserProfileSerializer,
-    UserChangePasswordSerializer,
+    UserChangePasswordSerializer, UserResetPasswordSerializer, UserResetPasswordRequestSerializer,
 )
-from apps.user.models import Follow
-from apps.user.signals import send_email
-
+from apps.user.models import Follow, PasswordReset
+from food_recipe import settings
 
 User = get_user_model()
 
@@ -31,19 +32,15 @@ class UserCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         email = request.data['email']
         user = User.objects.filter(email=email).first()
-        print(user, '00000000000000000000')
-        # serializer = self.get_serializer(data=request.data)
-        print('serializer', 'pppppppppppppppp')
-
         if user and not user.is_active:
             serializer = self.get_serializer(request.data)
-            print('ooooooooooo')
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 user_create = UserCreateAPIView.as_view()
 
@@ -185,3 +182,67 @@ def change_password(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserPasswordResetRequestAPIView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = UserResetPasswordRequestSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        email = request.data['email']
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            reset = PasswordReset(email=email, token=token)
+            reset.save()
+
+            reset_url = f"http://10.10.4.143:8000/api/v0/user/reset-password/{token}"
+
+            subject = 'Password Reset Requested'
+            message = f'Please click the link below to reset your password:\n{reset_url}'
+            email_from = settings.EMAIL_HOST_USER
+            recipient_list = [email]
+            send_mail(subject, message, email_from, recipient_list)
+
+            return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "User with credentials not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+forgot_password = UserPasswordResetRequestAPIView.as_view()
+
+
+class UserResetPasswordAPIView(APIView):
+    serializer_class = UserResetPasswordSerializer
+
+    def post(self, request, token):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        new_password = data['new_password']
+        confirm_password = data['confirm_password']
+
+        if new_password != confirm_password:
+            return Response({"error": "Passwords do not match"}, status=400)
+
+        reset_obj = PasswordReset.objects.filter(token=token).first()
+
+        if not reset_obj:
+            return Response({'error': 'Invalid token'}, status=400)
+
+        user = User.objects.filter(email=reset_obj.email).first()
+
+        if user:
+            user.set_password(request.data['new_password'])
+            user.save()
+
+            reset_obj.delete()
+
+            return Response({'success': 'Password updated'})
+        else:
+            return Response({'error': 'No user found'}, status=404)
+
+
+reset_password = UserResetPasswordAPIView.as_view()

@@ -13,7 +13,7 @@ User = get_user_model()
 def save_recipe(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
-            user=instance.user,
+            user=instance.recipe.user,
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.pk,
             title='Save Recipe Alert',
