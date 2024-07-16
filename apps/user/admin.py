@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from apps.user.models import User, Follow
+from apps.user.models import User, Follow, PasswordReset
 
 
 @admin.register(User)
@@ -17,3 +17,4 @@ class RecipeAdmin(ImportExportModelAdmin):
 
 
 admin.site.register(Follow)
+admin.site.register(PasswordReset)

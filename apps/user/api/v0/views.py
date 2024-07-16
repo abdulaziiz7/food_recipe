@@ -197,7 +197,7 @@ class UserPasswordResetRequestAPIView(APIView):
             reset = PasswordReset(email=email, token=token)
             reset.save()
 
-            reset_url = f"http://127.0.0.1:8000/api/v0/user/reset-password/{token}"
+            reset_url = f"http://10.10.4.143:8000/api/v0/user/reset-password/{token}"
 
             subject = 'Password Reset Requested'
             message = f'Please click the link below to reset your password:\n{reset_url}'
