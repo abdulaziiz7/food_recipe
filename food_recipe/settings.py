@@ -46,6 +46,9 @@ THIRD_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'import_export',
+    'django_redis',
+    'django_celery_beat',
+    'django_celery_results',
 
     # OAuth
     'oauth2_provider',
@@ -242,3 +245,4 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'cybermizrobov72022@gmail.com'
 EMAIL_HOST_PASSWORD = 'rbzcjuhfddcxjier'
+

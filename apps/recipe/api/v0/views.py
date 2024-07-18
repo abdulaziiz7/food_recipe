@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
@@ -145,6 +146,14 @@ class RecipeListAPIView(ListAPIView):
     filter_backends = (OrderingFilter, DjangoFilterBackend)
     filterset_class = RecipeFilter
     ordering_fields = ['created_at']
+
+    # def get_queryset(self):
+    #     recipes = cache.get('recipes_list')
+    #     if recipes is None:
+    #         recipes = Recipe.objects.all()
+    #
+    #         cache.set('product_list', recipes)
+    #     return recipes
 
 
 class SavedRecipeAPIView(CreateAPIView):

@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
-from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -19,7 +18,7 @@ from apps.user.api.v0.serializers import (
     UserChangePasswordSerializer, UserResetPasswordSerializer, UserResetPasswordRequestSerializer,
 )
 from apps.user.models import Follow, PasswordReset
-from food_recipe import settings
+from apps.user.tasks import send_email
 
 User = get_user_model()
 
@@ -197,13 +196,15 @@ class UserPasswordResetRequestAPIView(APIView):
             reset = PasswordReset(email=email, token=token)
             reset.save()
 
-            reset_url = f"http://10.10.4.143:8000/api/v0/user/reset-password/{token}"
-
+            reset_url = f"http://127.0.0.1:8000/api/v0/user/reset-password/{token}"
             subject = 'Password Reset Requested'
             message = f'Please click the link below to reset your password:\n{reset_url}'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [email]
-            send_mail(subject, message, email_from, recipient_list)
+            send_email.delay(
+                subject=subject,
+                message=message,
+                email=email,
+                redirect_url=reset_url
+            )
 
             return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
         else:
