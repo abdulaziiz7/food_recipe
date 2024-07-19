@@ -1,11 +1,11 @@
 from django.urls import path
+
 from .views import (
     recipe_list, recipe_category,
     recipe_comment_create, recipe_comment_list,
     recipe_comment_delete,
-    like_dislike_comment, recipe_create, recipe_update, rate_recipe, recipe_list_for_user, saved_recipe, recipe_delete
+    recipe_list_for_user, saved_recipe, recipe_create, recipe_update, rate_recipe, like_dislike_comment, recipe_delete
 )
-
 app_name = 'recipe_api'
 
 urlpatterns = [

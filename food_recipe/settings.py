@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-@ge!e5^^r=f8@v8yv%7avuzt5!!e&w8b2ehyty%wtaft6m5oiz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -46,6 +46,7 @@ THIRD_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'import_export',
+
     # OAuth
     'oauth2_provider',
     'social_django',
@@ -208,10 +209,6 @@ SIMPLE_JWT = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    # Facebook OAuth2
-    'social_core.backends.facebook.FacebookAppOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-
     # Google OAuth2
     'social_core.backends.google.GoogleOAuth2',
 
@@ -222,21 +219,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-# Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = '1SXfS45Qh5byfAjrSY4qeeiN8RZh2RhxN38cUUNq'
-SOCIAL_AUTH_FACEBOOK_SECRET = 'OgTq0uTdd5czgnNjGXWmm4dUhNYOCfJkOIH9PlnyuSgIdvXMEM5D9BLw6c1MeLmosWrspcjbFEeH39juHzivX1UDlFQfr3AZksdhdGt847ALhhFZvMBVgFmIcpjD8iLW'
-
-# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from Facebook.
-# Email is not sent by default, to get it, you must request the email permission.
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
-SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
-  'locale': 'ru_RU',
-  'fields': 'id, name, email'
-}
-SOCIAL_AUTH_FACEBOOK_API_VERSION = '2.10'
-access_token_facebook = "EAAnS1ZClaclMBO6QMsayjQc8tiOczN5TRMRoUTUHDqmgJCpi2d66ZABsSWUx9xUZCFasNsYSK1pCgC0tNVrbswxWBH5ZAMfOb6OkrfQx2u1ZATCUUqcK0kAD72iZBUQtx8ZAWEEbJywl3J2J7uVdZAe39l1yrJyP6kGdGJj8TfOhyiZA3PBtH0rSs0yzBSkZCpttQDabDvPQrRbZBRIiIorzgZDZD"
-
-
 # Google configuration
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '755X1mhDb07FRpnxuy5ca2xUgVfWcE6cjxJfYmfd'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'vbiDJlZuYRjimHCZ1o2f9fBIvAu7tJry1ukUuCfgPYRXNde7TVdJmYAra5hnYe6a3qpMYqlg8q3TgKG6LOHs3rXOdeFsr1u9UZ6fVUgiIVBTDxWD5zySaOaNEJ9LviRm'
@@ -246,8 +228,17 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
 ]
-access_token_google = 'ya29.a0AXooCguQPCJiEONdswGnMDUXYRYoUHQO-neaLkgLzYb5l4oGtVG2X5o1W6bxaHkUEcomWORHB-Pxiu0PHqPCrcKu85-aAO_QBr0416kJqTOOyU5koKlvh5OzVJ4PwA1BowPptEzAbZaxjHoi0wYVxLsKigUmVklBXuS-aCgYKAXISARMSFQHGX2MiFu1IVBRuunrLdvBXe-gl_g0171'
+access_token_google = "ya29.a0AXooCgu7cNXsKF93dxz-pMIMYll2e68KgorG6k_NMNq7rWYITN7iLLgzhxq2I4vSbntR3yJ_BhNpfwHG6iI5qaJNth1_OJN3clal0cY1UDfuePN0A3TpgpDC5jFjV2wAO4v9dCZ_Gqj3sZYNUqjgMAbwX_PXgF2tMQrqaCgYKARESARMSFQHGX2MiUkAZYvT9mxGqrGiyoSpLyw0171"
 
 OAUTH2_PROVIDER = {
     'ACCESS_TOKEN_EXPIRE_SECONDS': 604800,  # 7 days
 }
+
+
+#Email SETTINGS
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'cybermizrobov72022@gmail.com'
+EMAIL_HOST_PASSWORD = 'rbzcjuhfddcxjier'

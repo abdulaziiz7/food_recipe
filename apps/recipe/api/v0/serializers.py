@@ -1,7 +1,9 @@
 from django.db.models import Avg
 from rest_framework import serializers
+
 from apps.recipe.models import Comment, Category, Tag, Recipe
 from apps.recipe.models import RateRecipe, CommentLike
+from apps.user.api.v0.serializers import UserSerializer
 
 
 class RateRecipeSerializer(serializers.ModelSerializer):
@@ -12,10 +14,11 @@ class RateRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeListSerializer(serializers.ModelSerializer):
     rates = RateRecipeSerializer(many=True, read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'image', 'rates']
+        fields = ['id', 'title', 'time_minutes', 'image', 'rates', 'user']
 
     def to_representation(self, instance):
         tr = super().to_representation(instance)
@@ -55,10 +58,12 @@ class CreateCategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['name']
 
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ['name']
+
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
@@ -76,6 +81,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
         return recipe
 
+
 class RecipeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
@@ -85,5 +91,3 @@ class RecipeUpdateSerializer(serializers.ModelSerializer):
 class RecipeDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-
-# ----------------- Rate ----------------------

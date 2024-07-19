@@ -1,8 +1,10 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Recipe, RateRecipe, Category, Tag, RecipeIngredient, RecipeProcedure, Comment, CommentLike, \
-    RecipeSaved
+from .models import (
+    Recipe, RateRecipe, Category, Tag, RecipeIngredient,
+    RecipeProcedure, Comment, CommentLike, RecipeSaved
+)
 
 
 @admin.register(Category)
@@ -19,21 +21,19 @@ class CategoryAdmin(ImportExportModelAdmin):
 class RecipeIngredientInlineModel(admin.TabularInline):
     model = RecipeIngredient
     fields = ['ingredient_title', 'ingredient_image']
-    list_display = ['ingredient_title', 'ingredient_image']
     can_delete = False
 
 
 class RecipeProcedureInlineModel(admin.TabularInline):
     model = RecipeProcedure
     fields = ['step', 'description']
-    list_display = ['id', 'step', 'description']
     can_delete = False
 
 
 @admin.register(Recipe)
 class RecipeAdmin(ImportExportModelAdmin):
-    fields = ['user', 'title', 'category', 'time_minutes', 'image']
-    list_display = ['id', 'title', 'category']
+    fields = ['user', 'title', 'category', 'time_minutes', 'image' , 'video']
+    list_display = ['title', 'category']
     list_filter = ['category',]
     search_fields = ['title', 'category__name']
     inlines = [RecipeIngredientInlineModel, RecipeProcedureInlineModel]
@@ -48,22 +48,15 @@ class RecipeAdmin(ImportExportModelAdmin):
 @admin.register(RecipeIngredient)
 class RecipeIngredientAdmin(ImportExportModelAdmin):
     list_display = ['ingredient_title', 'recipe']
-    list_filter = ['id','ingredient_title', 'recipe']
 
 
 @admin.register(RecipeProcedure)
 class RecipeIngredientAdmin(ImportExportModelAdmin):
     list_display = ['step', 'recipe']
-    list_filter = ['step', 'recipe']
-
-@admin.register(Tag)
-class TagAdmin(ImportExportModelAdmin):
-    list_display = ['id','name']
-
-
 
 
 admin.site.register(RateRecipe)
+admin.site.register(Tag)
 admin.site.register(CommentLike)
 admin.site.register(Comment)
 admin.site.register(RecipeSaved)
