@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model, update_session_auth_hash
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.cache import cache
+from django.core.mail import send_mail
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -18,7 +20,7 @@ from apps.user.api.v0.serializers import (
     UserChangePasswordSerializer, UserResetPasswordSerializer, UserResetPasswordRequestSerializer,
 )
 from apps.user.models import Follow, PasswordReset
-from apps.user.tasks import send_email
+from food_recipe import settings
 
 User = get_user_model()
 
@@ -40,6 +42,11 @@ class UserCreateAPIView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    @swagger_auto_schema(operation_id='Create user', tags=['User'])
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return response
+
 
 user_create = UserCreateAPIView.as_view()
 
@@ -49,6 +56,10 @@ class UserUpdateAPIView(UpdateAPIView):
     serializer_class = UserUpdateSerializer
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_id='Update user info', tags=['User'])
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
 
 user_update = UserUpdateAPIView.as_view()
 
@@ -56,6 +67,7 @@ user_update = UserUpdateAPIView.as_view()
 class UserLoginView(ObtainAuthToken):
     serializer_class = UserLoginSerializer
 
+    @swagger_auto_schema(operation_id='Login', tags=['User'])
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -77,6 +89,11 @@ class FollowingCreateAPIView(CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(follower=self.request.user)
+
+    @swagger_auto_schema(operation_id='Create following', tags=['User'])
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return response
 
 
 following_create = FollowingCreateAPIView.as_view()
@@ -111,6 +128,10 @@ class FollowersListAPIView(ListAPIView):
         qs = qs.filter(following=self.request.user)
         return qs
 
+    @swagger_auto_schema(operation_id='Followers list', tags=['User'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 followers_list = FollowersListAPIView.as_view()
 
@@ -124,6 +145,10 @@ class FollowingListAPIView(ListAPIView):
         qs = super().get_queryset()
         qs = qs.filter(follower=self.request.user)
         return qs
+
+    @swagger_auto_schema(operation_id='Followings list', tags=['User'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 following_list = FollowingListAPIView.as_view()
@@ -139,11 +164,16 @@ class UserProfileAPIView(ListAPIView):
         qs = qs.filter(email=self.request.user.email)
         return qs
 
+    @swagger_auto_schema(operation_id='User profile', tags=['User'])
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 user_profile = UserProfileAPIView.as_view()
 
 
-@api_view(['GET'])
+@swagger_auto_schema(methods=['get', 'post'], operation_id='Verify code', tags=['User'])
+@api_view(['GET', 'POST'])
 def verify_code(request):
     user_id = request.GET.get('user_id')
     code = request.GET.get('code')
@@ -165,6 +195,7 @@ def verify_code(request):
     return Response({"message": "Invalid code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(methods=['post'], operation_id='Change password', tags=['User'])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_password(request):
@@ -185,6 +216,7 @@ class UserPasswordResetRequestAPIView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserResetPasswordRequestSerializer
 
+    @swagger_auto_schema(operation_id='Forgot password', tags=['User'])
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         email = request.data['email']
@@ -195,17 +227,17 @@ class UserPasswordResetRequestAPIView(APIView):
             token = token_generator.make_token(user)
             reset = PasswordReset(email=email, token=token)
             reset.save()
-
+            from_email = settings.EMAIL_HOST_USER
             reset_url = f"http://127.0.0.1:8000/api/v0/user/reset-password/{token}"
             subject = 'Password Reset Requested'
             message = f'Please click the link below to reset your password:\n{reset_url}'
-            send_email.delay(
-                subject=subject,
-                message=message,
-                email=email,
-                redirect_url=reset_url
-            )
-
+            # send_email.delay(
+            #     subject=subject,
+            #     message=message,
+            #     email=email,
+            #     redirect_url=reset_url
+            # )
+            send_mail(subject, message, from_email, [email])
             return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "User with credentials not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -217,6 +249,7 @@ forgot_password = UserPasswordResetRequestAPIView.as_view()
 class UserResetPasswordAPIView(APIView):
     serializer_class = UserResetPasswordSerializer
 
+    @swagger_auto_schema(operation_id='Reset password', tags=['User'])
     def post(self, request, token):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
