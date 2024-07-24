@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, ListAPIView, DestroyAPIView, get_object_or_404
@@ -28,10 +29,8 @@ class RecipeCreateAPIView(CreateAPIView):
 class RecipeUpdateAPIView(UpdateAPIView):
     serializer_class = RecipeUpdateSerializer
     queryset = Recipe.objects.all()
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
-
-    # lookup_field = 'id'
 
     def get_object(self):
         obj = super().get_object()
@@ -40,7 +39,7 @@ class RecipeUpdateAPIView(UpdateAPIView):
 
 
 class RecipeDeleteAPIView(DestroyAPIView):
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, IsAuthenticated]
     model = Recipe
 
     def delete(self, request, pk):
@@ -53,7 +52,7 @@ class RecipeDeleteAPIView(DestroyAPIView):
 class RecipeListForUserAPIView(ListAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeListSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -66,6 +65,7 @@ class RecipeListForUserAPIView(ListAPIView):
 class CategoryListAPIView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategoryListSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CommentCreateAPIView(CreateAPIView):
@@ -147,17 +147,10 @@ class RecipeListAPIView(ListAPIView):
     filterset_class = RecipeFilter
     ordering_fields = ['created_at']
 
-    # def get_queryset(self):
-    #     recipes = cache.get('recipes_list')
-    #     if recipes is None:
-    #         recipes = Recipe.objects.all()
-    #
-    #         cache.set('product_list', recipes)
-    #     return recipes
-
 
 class SavedRecipeAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = None
 
     def create(self, request, pk):
         recipe = get_object_or_404(Recipe, pk=pk)

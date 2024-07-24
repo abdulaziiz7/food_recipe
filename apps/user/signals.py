@@ -26,10 +26,10 @@ def create_follow(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=User)
-def send_email(sender, instance, created, **kwargs):
+def send_email1(sender, instance, created, **kwargs):
     code = generate_code()
     cache.set(f"{instance.pk}", code, timeout=100)
-    redirect_url = f"http://127.0.0.1:8000/api/v0/user/verify-code?code={code}&user_id={instance.pk}"
+    redirect_url = f"http://10.10.4.143:8000/api/v0/user/verify-code?code={code}&user_id={instance.pk}"
     subject = "Verify your email!"
     message = f"Verify code: {code} url: {redirect_url}"
     from_email = settings.EMAIL_HOST_USER

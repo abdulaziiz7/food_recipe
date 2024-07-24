@@ -54,11 +54,46 @@ user_create = UserCreateAPIView.as_view()
 class UserUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, )
 
-    @swagger_auto_schema(operation_id='Update user info', tags=['User'])
+    @swagger_auto_schema(
+        operation_id='Update user info',
+        tags=['User'],
+        request_body=UserCreateSerializer,
+        responses={
+            status.HTTP_200_OK: UserCreateSerializer,
+            status.HTTP_400_BAD_REQUEST: 'Bad Request',
+            status.HTTP_401_UNAUTHORIZED: 'Unauthorized',
+            status.HTTP_404_NOT_FOUND: 'Not Found'
+        }
+    )
     def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
+        user = self.request.user
+        serializer = UserCreateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(
+        operation_id='Partial update user info',
+        tags=['User'],
+        request_body=UserCreateSerializer,
+        responses={
+            status.HTTP_200_OK: UserCreateSerializer,
+            status.HTTP_400_BAD_REQUEST: 'Bad Request',
+            status.HTTP_401_UNAUTHORIZED: 'Unauthorized',
+            status.HTTP_404_NOT_FOUND: 'Not Found'
+        }
+    )
+    def patch(self, request, *args, **kwargs):
+        user = self.request.user
+        serializer = UserCreateSerializer(user, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 user_update = UserUpdateAPIView.as_view()
@@ -172,8 +207,8 @@ class UserProfileAPIView(ListAPIView):
 user_profile = UserProfileAPIView.as_view()
 
 
-@swagger_auto_schema(methods=['get', 'post'], operation_id='Verify code', tags=['User'])
-@api_view(['GET', 'POST'])
+@swagger_auto_schema(methods=['get'], operation_id='Verify code', tags=['User'])
+@api_view(['GET'])
 def verify_code(request):
     user_id = request.GET.get('user_id')
     code = request.GET.get('code')
@@ -227,16 +262,10 @@ class UserPasswordResetRequestAPIView(APIView):
             token = token_generator.make_token(user)
             reset = PasswordReset(email=email, token=token)
             reset.save()
-            from_email = settings.EMAIL_HOST_USER
-            reset_url = f"http://127.0.0.1:8000/api/v0/user/reset-password/{token}"
+            reset_url = f"http://10.10.4.143:8000/api/v0/user/reset-password/{token}"
             subject = 'Password Reset Requested'
             message = f'Please click the link below to reset your password:\n{reset_url}'
-            # send_email.delay(
-            #     subject=subject,
-            #     message=message,
-            #     email=email,
-            #     redirect_url=reset_url
-            # )
+            from_email = settings.EMAIL_HOST_USER
             send_mail(subject, message, from_email, [email])
             return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
         else:

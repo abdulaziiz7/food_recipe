@@ -46,9 +46,6 @@ THIRD_APPS = [
     'drf_yasg',
     'rest_framework.authtoken',
     'import_export',
-    'django_redis',
-    'django_celery_beat',
-    'django_celery_results',
 
     # OAuth
     'oauth2_provider',
@@ -246,3 +243,10 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'cybermizrobov72022@gmail.com'
 EMAIL_HOST_PASSWORD = 'rbzcjuhfddcxjier'
 
+# #Celery SETTINGS
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'
+# CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERY_RESULT_SERIALIZER = 'json'
+# CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_TIMEZONE = 'Asia/Tashkent'
